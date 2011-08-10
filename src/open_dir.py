@@ -3,6 +3,7 @@ from PyQt4 import QtGui
 from PyQt4 import QtCore
 from PyQt4.QtCore import SIGNAL as qsignal
 from genericpath import isdir
+from epguides import find_or_add as getShow
 
 class Example(QtGui.QMainWindow):
   
@@ -81,18 +82,24 @@ class Example(QtGui.QMainWindow):
     def listItemClicked(self, widget):
         self.initTable(widget.text())
         
+    def setLabelText(self, label, text):
+        label.setText(text)
+        label.adjustSize()
+        
     def tableItemClicked(self, widget):
-        self.before.setText(widget.text())
-        self.before.adjustSize()
+        self.setLabelText(self.before, widget.text())
     
     CHECKS = [{'type': 'folder', 'pattern': '(?P<season>\d{1,2})'},
               {'type': 'filename', 'pattern': 'S(?P<season>\d{2})E(?P<episode>\d{2})'},
               {'type': 'filename', 'pattern': '(?P<season>\d{2})(?P<episode>\d{2})'},
-              {'type': 'filename', 'pattern': '(?P<season>\d{1})(?P<episode>\d{2})'}]
+              {'type': 'filename', 'pattern': '(?P<season>\d{1})(?P<episode>\d{2})'},
+              {'type': 'filename', 'pattern': '(?P<episode>\d{2}) +- +'}]
     
     def initTable(self, show):
         self.currentShow = str(show)
         self.showLocation = os.path.join(self.location, self.currentShow)
+        epguideShow = getShow(self.currentShow)
+        self.setLabelText(self.after, epguideShow.showurl if epguideShow else '')
         
         list = []
         self.scanDir(root=self.showLocation, list=list)
@@ -103,6 +110,8 @@ class Example(QtGui.QMainWindow):
         
         for file in list:
             filename = file['filename']
+            if not filename.endswith('avi') and not filename.endswith('mkv'):
+                continue
             self.table.setItem(row, 0, self.newTWidgetItem(filename))
             season = None
             episode = None
@@ -131,9 +140,15 @@ class Example(QtGui.QMainWindow):
                 season = 1
             
             if season:
-                self.table.setItem(row, 2, self.newTWidgetItem(int(season)))
+                season = int(season)
+                self.table.setItem(row, 2, self.newTWidgetItem(season))
             if episode:
-                self.table.setItem(row, 3, self.newTWidgetItem(int(episode)))
+                episode = int(episode)
+                self.table.setItem(row, 3, self.newTWidgetItem(episode))
+                
+            if season and episode and epguideShow:
+                if epguideShow.eps.get(season) and epguideShow.eps[season].get(episode):
+                    self.table.setItem(row, 4, self.newTWidgetItem(epguideShow.eps[season][episode]['name']))
                 
             row += 1
             
@@ -166,7 +181,7 @@ class Example(QtGui.QMainWindow):
         
     def autoPilot(self):
         self.location = 'Y:\\vids\\shows\\'
-        self.initTable('Archer')
+        self.initTable('Caprica')
 
 app = QtGui.QApplication(sys.argv)
 ex = Example()
