@@ -452,8 +452,8 @@ def find_or_add(showname):
 	if show is None:
 		try:
 			shows.add_show(showname)
-			shows.build_cache()
 			shows = Shows(SETTINGS)
+			shows.build_cache()
 			show = shows.find_show(showname)
 		except URLException:
 			logging.error("Automatic URL retrieval failed for show %s. Use --show-url." % (showname))

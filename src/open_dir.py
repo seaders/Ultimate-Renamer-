@@ -21,7 +21,7 @@ class Example(QtGui.QMainWindow):
         
         self.setWindowTitle('OpenFile')
         
-        self.autoPilot()
+#        self.autoPilot()
     
     def initMenuBar(self):
         openFile = QtGui.QAction(QtGui.QIcon('open.png'), '&Open', self)
