@@ -23,11 +23,11 @@ class Example(QtGui.QMainWindow):
         
         self.setWindowTitle('OpenFile')
         
-        self.autoPilot()
+#        self.autoPilot()
         
     def autoPilot(self):
-        self.location = 'Y:\\vids\\shows\\'
-        self.initTable('The Wire')
+        self.location = 'C:\\Some Location\\'
+        self.initTable('Some Show')
 
     
     def initMenuBar(self):
@@ -88,7 +88,7 @@ class Example(QtGui.QMainWindow):
         self.connect(self.table, qsignal('itemClicked (QTableWidgetItem *)'), self.tableItemClicked)
         
     def showDialog(self):
-        self.location = str(QtGui.QFileDialog.getExistingDirectory(self, 'Choose Directory', 'Y:/vids/shows'))
+        self.location = str(QtGui.QFileDialog.getExistingDirectory(self, 'Choose Directory'))
         self.initList()
             
     def initList(self):
