@@ -18,6 +18,9 @@ CHECKS = [{"type": "folder", "pattern"  : "(?P<season>\d{1,2})(?# capture the se
           {"type": "filename", "pattern": "(?<!\d{1})(?P<season>\d{1,2})(?P<episode>\d{2})(?!\d{1})(?# capture season and episode, in 0102 or 102 format, lookahead and lookbehind to ensure no other digits touch the group)"},
           {"type": "filename", "pattern": "(?<=^)(?P<episode>\d{2})(?!\d{1})(?# capture season and episode, in '02...', lookbehind to ensure that it's at the beginning of the filename)"}]
 
+for check in CHECKS:
+    check["epre"] = re.compile(r".*{0}".format(check["pattern"]), re.I)
+
 DEFAULT_R = "~"
 # Invalid characters, with suggested valid replacements, this may need to be extended depending on some operating systems
 REPLACERS = {"|": ";", "\"": "'", ":": ";", "<": DEFAULT_R, ">": DEFAULT_R, "\\": DEFAULT_R, "/": DEFAULT_R, "*": DEFAULT_R, "?": DEFAULT_R}
@@ -60,7 +63,7 @@ def initTable(show):
             if type == "folder" and defaultFirstSeason:
                 continue
             
-            matchObj = re.match(r".*{0}".format(check["pattern"]), folder if type == "folder" else filename, re.I)
+            matchObj = check["epre"].match(folder if type == "folder" else filename)
             if matchObj:
                 res = matchObj.groupdict()
                 season = season if season else res.get("season")
