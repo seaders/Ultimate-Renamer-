@@ -3,15 +3,19 @@ from genericpath import isdir
 
 from PyQt4 import QtGui
 from PyQt4.QtCore import Qt, SIGNAL as qsignal
+
 import logic
 
-class Example(QtGui.QMainWindow):
+class AwesomeRenamer(QtGui.QMainWindow):
   
     def __init__(self):
-        super(Example, self).__init__()
+        super(AwesomeRenamer, self).__init__()
         
         logic.setView(self)
         self.initUI()
+        
+        self.exampleLocation = os.path.join(os.path.dirname(__file__), "Example")
+        self.autoPilot()
         
     def initUI(self):
         self.setGeometry(100, 100, 1000, 500)
@@ -19,16 +23,14 @@ class Example(QtGui.QMainWindow):
         self.setCentralWidget(self.container)
         
         self.initMenuBar()
-        self.initListView()      
+        self.initListView()
         
-        self.setWindowTitle('OpenFile')
-        
-#        self.autoPilot()
+        self.setWindowTitle('Awesome Renamer')
         
     def autoPilot(self):
-        self.location = 'C:\\Some Location\\'
-        self.initTable('Some Show')
-
+        self.location = self.exampleLocation
+        self.initList()
+        self.initTable('Battlestar Galactica')
     
     def initMenuBar(self):
         openFile = QtGui.QAction(QtGui.QIcon('open.png'), '&Open', self)
@@ -88,7 +90,7 @@ class Example(QtGui.QMainWindow):
         self.connect(self.table, qsignal('itemClicked (QTableWidgetItem *)'), self.tableItemClicked)
         
     def showDialog(self):
-        self.location = str(QtGui.QFileDialog.getExistingDirectory(self, 'Choose Directory'))
+        self.location = str(QtGui.QFileDialog.getExistingDirectory(self, 'Choose shows root directory', self.exampleLocation))
         self.initList()
             
     def initList(self):
@@ -136,11 +138,20 @@ class Example(QtGui.QMainWindow):
     
     def initTableHeader(self):
         self.table.setRowCount(1)
+        
         self.table.setItem(0, 0, self.newCheckboxTWidgetItem())
-
+        self.table.item(0, 0).setBackground(QtGui.QBrush("#c56c00"))
+        
         labels = ['File Name', 'Parent Folder', 'Season', 'Episode', 'Title']
         for index in range(len(labels)):
             self.table.setItem(0, index+1, self.newTextTWidgetItem(labels[index]))
+            
+        bg = QtGui.QBrush(QtGui.QColor(150, 150, 150))
+        font = self.table.item(0, 0).font()
+        font.setBold(True)
+        for col in range(self.table.columnCount()):
+            self.table.item(0, col).setBackground(bg)
+            self.table.item(0, col).setFont(font)
         
     def newTextTWidgetItem(self, text):
         item = QtGui.QTableWidgetItem(QtGui.QTableWidgetItem.Type)
@@ -152,7 +163,9 @@ class Example(QtGui.QMainWindow):
         item.setCheckState(Qt.Unchecked)
         return item
     
-    def initTable(self, show):
+    def initTable(self, show=None):
+        if show is None:
+            show = self.currentShow
         self.table.clearContents()
         self.initTableHeader()
         logic.initTable(show)

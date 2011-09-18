@@ -1,9 +1,8 @@
 import sys
 
-from view import Example
+from view import AwesomeRenamer
 from PyQt4 import QtGui
-
 app = QtGui.QApplication(sys.argv)
-ex = Example()
+ex = AwesomeRenamer()
 ex.show()
 app.exec_()
