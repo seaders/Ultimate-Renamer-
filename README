@@ -1,4 +1,5 @@
-This project is now easily buildable (on Windows), with py2exe, http://www.py2exe.org/ .  All that needs doing is download the appropriate version from there and then run
- 'python setup.py py2exe --includes sip'
+This project is easily buildable (on Windows), with py2exe, http://www.py2exe.org/ .
 
-once all libraries are on your machine, in site-packages and whatnot, you should be all good. 
+All that needs doing is download the appropriate version from there and run
+ 'python setup.py py2exe --includes sip'
+from the src directory and once all libraries are on your machine, in site-packages and whatnot, you should be all good. 
