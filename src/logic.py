@@ -37,15 +37,15 @@ def initTable(show):
     epguideShow = getShow(VIEW.currentShow)
     VIEW.setLabelText(VIEW.after, epguideShow.showurl if epguideShow else "")
     
-    list = []
-    scanDir(root=VIEW.showLocation, list=list)
+    l = []
+    scanDir(root=VIEW.showLocation, l=l)
     
-    numRows = len(list)
+    numRows = len(l)
     
     for row in range(numRows):
-        file = list[row]
+        f = l[row]
         row = VIEW.table.rowCount()
-        filename = file["filename"]
+        filename = f["filename"]
         ext = filename[-3:]
         if not ext in ["avi", "mkv", "mpg", "wmv", "mp4"]:
             continue
@@ -55,15 +55,15 @@ def initTable(show):
         VIEW.table.setItem(row, 1, VIEW.newTextTWidgetItem(filename))
         season = None
         episode = None
-        folder = file["folder"]
+        folder = f["folder"]
         defaultFirstSeason = not folder 
         
         for check in CHECKS:
-            type = check["type"]
-            if type == "folder" and defaultFirstSeason:
+            t = check["type"]
+            if t == "folder" and defaultFirstSeason:
                 continue
             
-            matchObj = check["epre"].match(folder if type == "folder" else filename)
+            matchObj = check["epre"].match(folder if t == "folder" else filename)
             if matchObj:
                 res = matchObj.groupdict()
                 season = season if season else res.get("season")
@@ -104,16 +104,16 @@ def checkMatch(matchObj, season, episode):
         both = True
     return season, episode, both
         
-def scanDir(list, root, folder=None):
+def scanDir(l, root, folder=None):
     if not folder is None:
         root = os.path.join(root, folder)
         
     for f in os.listdir(root):
         path = os.path.join(root, f)
         if isdir(path):
-            scanDir(list, root, f)
+            scanDir(l, root, f)
         else:
-            list.append({"filename": f,
+            l.append({"filename": f,
                          "folder": folder,
                          "from_root": None if root == VIEW.showLocation else os.path.relpath(root, VIEW.showLocation)})
     
